@@ -1,0 +1,108 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(GuessTheNumberApp());
+}
+
+class GuessTheNumberApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Guess the number',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: GuessTheNumberPage(),
+    );
+  }
+}
+
+class GuessTheNumberPage extends StatefulWidget {
+  @override
+  _GuessTheNumberPageState createState() => _GuessTheNumberPageState();
+}
+
+class _GuessTheNumberPageState extends State<GuessTheNumberPage> {
+  final _controller = TextEditingController();
+  int _randomNumber = Random().nextInt(10) + 1; // Random number from 1 to 10
+  String _message = '';
+  int _attempts = 0;
+
+  void _checkGuess() {
+    int? guess = int.tryParse(_controller.text);
+    if (guess == null) {
+      setState(() {
+        _message = 'Please enter a valid number!';
+      });
+      return;
+    }
+
+    setState(() {
+      _attempts++;
+      
+      if (guess > _randomNumber) {
+        _message = 'Too much! Try again.';
+      } else if (guess < _randomNumber) {
+        _message = 'Too little! Try again.';
+      } else {
+        _message = 'Congratulations! You guessed the number $_randomNumber for $_attempts attempts!';
+      }
+    });
+
+    _controller.clear();
+  }
+
+  void _resetGame() {
+    setState(() {
+      _randomNumber = Random().nextInt(10) + 1; // New number from 1 to 10
+      _message = '';
+      _attempts = 0;
+      _controller.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Guess the number'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Guess the number from 1 to 10:',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Your number',
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _checkGuess,
+              child: Text('Check'),
+            ),
+            SizedBox(height: 20),
+            Text(
+              _message,
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _resetGame,
+              child: Text('Start over'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
